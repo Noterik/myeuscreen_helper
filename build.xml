@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<project name="myeuscreen_helper" default="jar">
+	<path id="build-classpath">
+	    <fileset dir="build/lib">
+	        <include name="*.jar"/>
+	    </fileset>
+	</path>
+	
+	<target name="clean">
+        <delete dir="build/classes"/>
+		<delete dir="build/jar"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" debug="on">
+        	<classpath>
+		    	<path refid="build-classpath"/>
+		    </classpath>
+        </javac>
+    </target>
+	
+    <target name="jar" depends="clean, compile">
+        <mkdir dir="build/jar"/>
+    	<mkdir dir="build/lib"/>
+        <jar destfile="build/jar/myeuscreen_helper.jar" basedir="build/classes">
+        	<manifest>
+				<attribute name="Built-By" value="Noterik B.V."/>
+			   	<attribute name="Main-Class" value=""/>
+			</manifest>
+        </jar>
+    </target>
+</project>
