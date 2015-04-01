@@ -9,11 +9,10 @@ import org.springfield.fs.FSList;
 import org.springfield.fs.FSListManager;
 import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
+import org.springfield.lou.json.JSONField;
 import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Rights;
-import org.springfield.lou.myeuscreen.rights.Role;
-import org.springfield.lou.json.JSONField;
 
 public class Collection extends Publication{
 	private static String systemName = "collection";
@@ -22,6 +21,7 @@ public class Collection extends Publication{
 	
 	public Collection(FsNode node) {
 		super(node);
+		System.out.println("new Collection()");
 		this.populateItems();
 		this.populateImage();
 		// TODO Auto-generated constructor stub
@@ -70,20 +70,21 @@ public class Collection extends Publication{
 	}
 		
 	private void populateItems(){
-		FSList rawItems = FSListManager.get(this.getPath());
+		FSList rawItems = FSListManager.get(this.getPath(), false);
 		List<FsNode> itemsList = rawItems.getNodes();
 		
 		this.items = new ArrayList<EUScreenMediaItem>();
 		
 		for(FsNode node : itemsList){	
-			items.add(new EUScreenMediaItem(node));
+			if(node.getName() != "rights")
+				items.add(new EUScreenMediaItem(node));
 		}
 		
 	}
 	
 	private void populateImage(){
 		if(items.size() > 0){
-			this.setImage((String) this.items.get(0).get("screenshot"));
+			this.setImage((String) this.items.get(1).get("screenshot"));
 		}
 	}
 

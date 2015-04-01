@@ -28,6 +28,19 @@ public class PublicationComparator implements Comparator<Publication> {
 			return fieldName;
 		}
 		
+		public String getReadable() {
+			return readable;
+		}
+		
+		public static SortField getByFieldName(String fieldName){
+			for(SortField field : SortField.values()){
+				if(field.getFieldName().toLowerCase().equals(fieldName.toLowerCase())){
+					return field;
+				}
+			}
+			return null;
+		}
+		
 		public JSONObject toJSON(){
 			JSONObject json = new JSONObject();
 			json.put("fieldName", this.fieldName);
@@ -39,7 +52,16 @@ public class PublicationComparator implements Comparator<Publication> {
 	
 	public enum SortDirection {
 		UP,
-		DOWN
+		DOWN;
+		
+		public static SortDirection getByName(String name){
+			for(SortDirection direction : SortDirection.values()){
+				if(direction.name().toLowerCase().equals(name.toLowerCase())){
+					return direction;
+				}
+			}
+			return null;
+		}
 	}
 	
 	

@@ -13,4 +13,14 @@ public enum PublicationType {
 	public Class<? extends Publication> getTypeClass(){
 		return type;
 	}
+	
+	public static PublicationType getByName(String name){
+		for(PublicationType type : PublicationType.values()){
+			if(type.name().toLowerCase().equals(name.toLowerCase())){
+				return type;
+			}
+		}
+		
+		return null;
+	}
 }

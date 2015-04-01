@@ -4,17 +4,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
-import org.springfield.lou.myeuscreen.rights.IRoleActor;
-import org.springfield.lou.myeuscreen.rights.IncorrectRightsNodeFormatException;
-import org.springfield.lou.myeuscreen.rights.NodeWithRights;
-import org.springfield.lou.myeuscreen.rights.Rights;
-import org.springfield.lou.myeuscreen.rights.Role;
-import org.springfield.lou.myeuscreen.mapping.MappedObject;
-import org.springfield.lou.myeuscreen.mapping.SmithersXMLFieldMapping;
-import org.springfield.lou.myeuscreen.util.ImageUtils;
 import org.springfield.lou.json.JSONField;
+import org.springfield.lou.myeuscreen.mapping.SmithersXMLFieldMapping;
+import org.springfield.lou.myeuscreen.rights.IRoleActor;
+import org.springfield.lou.myeuscreen.rights.Role;
+import org.springfield.lou.myeuscreen.util.ImageUtils;
 
 public abstract class Publication extends MappedObjectWithRights{
 	private String id;
