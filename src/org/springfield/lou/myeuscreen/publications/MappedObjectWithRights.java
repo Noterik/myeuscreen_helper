@@ -16,8 +16,10 @@ public abstract class MappedObjectWithRights extends MappedObject implements Nod
 
 	public MappedObjectWithRights(FsNode node) {
 		super(node);
+		String cleanedPath = node.getPath().replace("//", "/");
 		
-		FsNode rightsNode = Fs.getNode(node.getPath() + "/rights/1");
+		FsNode rightsNode = Fs.getNode(cleanedPath + "/rights/1");
+		
 		this.rights = null;
 		try {
 			this.rights = new Rights(rightsNode);
