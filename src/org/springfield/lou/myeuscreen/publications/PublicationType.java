@@ -2,8 +2,9 @@ package org.springfield.lou.myeuscreen.publications;
 
 public enum PublicationType {
 	ALL (GenericPublication.class),
+	BOOKMARK (Bookmark.class),
 	COLLECTION (Collection.class),
-	TEASER (Teaser.class);
+	VIDEOPOSTER (VideoPoster.class);
 	
 	private final Class<? extends Publication> type;
 	PublicationType(Class<? extends Publication> type){
@@ -23,4 +24,18 @@ public enum PublicationType {
 		
 		return null;
 	}
+	
+	public PublicationSettings getSettings(){
+		return type.getAnnotation(PublicationSettings.class);
+	}
+
+	public static PublicationType getTypeForPublication(Publication p) {
+		for(PublicationType type : PublicationType.values()){
+			if(p.getClass().isAssignableFrom(type.getTypeClass())){
+				return type;
+			}
+		}
+		return null;
+	}
+	
 }

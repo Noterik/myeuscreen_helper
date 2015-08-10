@@ -7,54 +7,58 @@ import org.json.simple.JSONObject;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
 
+@PublicationSettings(systemName = "", readableName = "All", readablePlural = "All")
 public class GenericPublication extends Publication {
 
-	private static String systemName = "";
-	private static String readableName = "All";
 	private Publication actualPublication;
 	
-	public GenericPublication(FsNode node) {
+	public GenericPublication(FsNode node, String parent) throws NoSettingsForPublicationDeclaredException{
+		super(node, parent);
+		this.parseNode(node);
+	}
+	
+	public GenericPublication(FsNode node) throws NoSettingsForPublicationDeclaredException {
 		super(node);
 		System.out.println("new GenericPublication()");
 		this.parseNode(node);
 	}
-
-	public static String getSystemName(){
-		return systemName;
-	}
 	
-	public static String getReadableName(){
-		return readableName;
-	}
-	
-	private void parseNode(FsNode node){
+	private void parseNode(FsNode node) throws NoSettingsForPublicationDeclaredException{
 		for(PublicationType type : PublicationType.values()){
 			Class<? extends Publication> typeClass = type.getTypeClass();
-			try {
-				String systemName = (String) typeClass.getMethod("getSystemName").invoke(this);
+			PublicationSettings settings = typeClass.getAnnotation(PublicationSettings.class);
+			if(settings != null){
+				String systemName = settings.systemName();
 				if(systemName.equals(node.getName())){
-					Constructor<? extends Publication> constructor = typeClass.getConstructor(FsNode.class);
-					this.actualPublication = constructor.newInstance(node);
+					Constructor<? extends Publication> constructor;
+					try {
+						constructor = typeClass.getConstructor(FsNode.class);
+						this.actualPublication = constructor.newInstance(node);
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchMethodException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InstantiationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			}else{
+				throw new NoSettingsForPublicationDeclaredException("No settings declared! Please create a @PublicationSettings for " + this.getClass().getName());
 			}
+
 		}
 	}
 	

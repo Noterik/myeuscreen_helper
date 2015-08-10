@@ -1,15 +1,17 @@
 package org.springfield.lou.myeuscreen.rights;
 
 public enum Role{
-	VIEWER ("viewer"),
-	COMMENTER ("commenter"),
-	EDITOR("editor"),
-	OWNER("owner");
+	VIEWER ("viewer", "Can View"),
+	COMMENTER ("commenter", "Can Comment"),
+	EDITOR("editor", "Can Edit"),
+	OWNER("owner", "Owner");
 	
 	private String id;
+	private String readable;
 	
-	Role(String id){
+	Role(String id, String readable){
 		this.id = id;
+		this.readable = readable;
 	}
 	
 	public String getRoleId(){
@@ -18,5 +20,9 @@ public enum Role{
 	
 	public boolean equals(Role role){
 		return role.getRoleId().equals(this.getRoleId());
+	}
+	
+	public String getReadable(){
+		return this.readable;
 	}
 }

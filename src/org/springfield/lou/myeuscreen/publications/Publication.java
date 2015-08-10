@@ -4,11 +4,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
-import org.springfield.lou.myeuscreen.mapping.SmithersXMLFieldMapping;
+import org.springfield.lou.myeuscreen.mapping.ObjectToSmithersGetter;
+import org.springfield.lou.myeuscreen.mapping.SmithersToObjectSetter;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
-import org.springfield.lou.myeuscreen.rights.Role;
 import org.springfield.lou.myeuscreen.util.ImageUtils;
 
 public abstract class Publication extends MappedObjectWithRights{
@@ -18,6 +19,16 @@ public abstract class Publication extends MappedObjectWithRights{
 	private String creationDate;
 	private String image;
 	private String path;
+	
+	public Publication(){
+		
+	}
+	
+	public Publication(FsNode node, String parent){
+		super(node, parent);
+		this.setId(node.getId());
+		this.setPath(node.getPath());
+	}
 		
 	public Publication(FsNode node){
 		super(node);
@@ -28,13 +39,14 @@ public abstract class Publication extends MappedObjectWithRights{
 	@JSONField(field = "type")
 	public abstract String getType();
 	
+	@ObjectToSmithersGetter(mapTo = "name")
 	@SortableField(field = "name")
 	@JSONField(field = "name")
 	public String getName() {
 		return name;
 	}
 
-	@SmithersXMLFieldMapping(mapTo = "name")
+	@SmithersToObjectSetter(mapTo = "name")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -52,21 +64,23 @@ public abstract class Publication extends MappedObjectWithRights{
 		return d.getTime();
 	}
 
+	@ObjectToSmithersGetter(mapTo = "creationDate")
 	@JSONField(field = "creationDate")
 	public String getCreationDate() {
 		return creationDate;
 	}
 
-	@SmithersXMLFieldMapping(mapTo = "creationDate")
+	@SmithersToObjectSetter(mapTo = "creationDate")
 	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	@SmithersXMLFieldMapping(mapTo = "author")
+	@SmithersToObjectSetter(mapTo = "author")
 	public void setAuthor(String author) {
 		this.author = author;
 	}
 
+	@ObjectToSmithersGetter(mapTo = "author")
 	@JSONField(field="author")
 	public String getAuthor(){
 		return this.author;
@@ -77,12 +91,13 @@ public abstract class Publication extends MappedObjectWithRights{
 		return id;
 	}
 
+	@ObjectToSmithersGetter(mapTo = "image")
 	@JSONField(field="image")
 	public String getImage() {
 		return image;
 	}
 
-	@SmithersXMLFieldMapping(mapTo = "image")
+	@SmithersToObjectSetter(mapTo = "image")
 	public void setImage(String image) {
 		this.image = ImageUtils.mapURL(image, true);
 	}
@@ -91,30 +106,13 @@ public abstract class Publication extends MappedObjectWithRights{
 		this.id = id;
 	}
 	
-	public static String getSystemName(){
-		return "";
-	}
-	
-	public static String getReadableName(){
-		return "All";
-	}
-	
-	@JSONField(field="path")
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		if(path.contains("//")){
-			path = path.replace("//", "/");
-		}
-		this.path = path;
-	}
-
-	@Override
-	public void giveRole(IRoleActor user, Role role) {
-		// TODO Auto-generated method stub
-		
-	}	
+	public void stopSharingWith(IRoleActor actor){
+		System.out.println("myeuscreen: stopSharingWith()");
+		System.out.println(actor);
+		String uri = actor.getNode().getPath();
+		uri += "/publications/1/" + this.getType() + "/" + this.id;
+		Fs.deleteNode(uri);
+		this.getRights().removeRightsForActor(actor);
+	};
 	
 }
