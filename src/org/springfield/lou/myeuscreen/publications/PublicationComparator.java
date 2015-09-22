@@ -98,13 +98,13 @@ public class PublicationComparator implements Comparator<Publication> {
 
 					} catch (IllegalArgumentException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//e.printStackTrace();
 					} catch (IllegalAccessException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//e.printStackTrace();
 					} catch (InvocationTargetException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 					
 				}

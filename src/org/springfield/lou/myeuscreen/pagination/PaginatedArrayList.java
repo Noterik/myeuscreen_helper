@@ -82,7 +82,9 @@ public class PaginatedArrayList<E> extends ArrayList<E> implements
 	}
 	
 	public void sortWith(Comparator<E> comparator){
-		Collections.sort(this, comparator);
+		if(comparator != null){
+			Collections.sort(this, comparator);
+		}
 	}
 
 	@Override

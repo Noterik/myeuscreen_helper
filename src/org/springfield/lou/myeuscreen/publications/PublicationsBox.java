@@ -33,6 +33,8 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 	}
 	
 	public PublicationsBox(String path, HasPublicationsBox owner){
+		System.out.println("NEW PUBLICATIONSBOX()");
+		System.out.println("PATH: " + path);
 		if(Fs.getNode(path) != null){
 			this.node = Fs.getNode(path);
 		}
@@ -72,7 +74,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 					//FSList publications = FSListManager.get(uri, false);
 					
 					if(publicationsList != null && publicationsList.size() > 0){
-						
 						for(FsNode pNode : publicationsList){
 							Constructor<? extends Publication> constructor = typeClass.getConstructor(FsNode.class, String.class);
 							String actualPNodePath = pNode.getPath().replace("//", "/");
