@@ -48,6 +48,24 @@ public class VideoPoster extends Publication {
 		this.html = html;
 	}
 	
+	public static VideoPoster createVideoPoster(IRoleActor actor, String id, String title, String author, String html){
+		System.out.println("VideoPoster.createVideoPoster()");
+		VideoPoster poster = new VideoPoster();
+		poster.setId(id);
+		poster.setName(title);
+		poster.setCreationDate(new Date().toString());
+		poster.setAuthor(author);
+		poster.setHTML(html);
+		
+		try {
+			poster.getRights().giveRole(actor, Role.OWNER);
+		} catch (AlreadyHasRoleException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return poster;
+	}
+	
 	public static VideoPoster createVideoPoster(IRoleActor actor, String title, String author, String html){
 		System.out.println("VideoPoster.createVideoPoster()");
 		VideoPoster poster = new VideoPoster();
