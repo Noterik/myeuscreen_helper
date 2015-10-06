@@ -134,6 +134,22 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 		System.out.println(p.getType());
 		System.out.println("END PublicationsBox.addPublication()");
 		PublicationType pType = PublicationType.getTypeForPublication(p);
+		
+		for(PublicationType type : this.publications.keySet()){
+			PaginatedArrayList<Publication> list = this.publications.get(type);
+			
+			for(Publication cp : list){
+				System.out.println("CP path:" + cp.getId());
+				System.out.println("P path:" + p.getId());
+
+				if(cp.getId().equals(p.getId())){
+					System.out.println("---------------INCHECK-----------");
+					deletePublication(cp);
+					break;
+				}
+			}
+		}
+		
 		this.publications.get(pType).add(p);
 		this.publications.get(PublicationType.ALL).add(p);
 		p.save(this.node);
@@ -163,6 +179,7 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 		PaginatedArrayList<Publication> listToRemoveFrom = null;
 		Publication pubToRemove = null;
 		System.out.println("deletePublicationCalled()");
+
 		for(PublicationType type : this.publications.keySet()){
 			PaginatedArrayList<Publication> list = this.publications.get(type);
 			for(Publication cp : list){
@@ -175,13 +192,18 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 		
 		if(listToRemoveFrom != null && pubToRemove != null){
 			String uriToRemove = this.path + "/" + pubToRemove.getType() + "/" + pubToRemove.getId();
-			
 			Fs.deleteNode(uriToRemove);
 			
 			PaginatedArrayList<Publication> allList = this.publications.get(PublicationType.ALL);
+		
+			String pTypeStr = p.getType();
+			PublicationType pType = PublicationType.getByName(pTypeStr);
+			PaginatedArrayList<Publication> pList = this.publications.get(pType);
+
 			allList.remove(pubToRemove);
+			pList.remove(pubToRemove);
 			listToRemoveFrom.remove(pubToRemove);
-			
+		
 			this.publications.remove(p);
 			this.setChanged();
 			this.notifyObservers();
