@@ -58,7 +58,7 @@ public class Bookmark extends Publication {
 	@Override
 	public String getType() {
 		// TODO Auto-generated method stub
-		return null;
+		return "bookmark";
 	}
 	
 	public void setItem(EUScreenMediaItem item){

@@ -178,7 +178,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 	public void deletePublication(Publication p){
 		PaginatedArrayList<Publication> listToRemoveFrom = null;
 		Publication pubToRemove = null;
-		System.out.println("deletePublicationCalled()");
 
 		for(PublicationType type : this.publications.keySet()){
 			PaginatedArrayList<Publication> list = this.publications.get(type);
