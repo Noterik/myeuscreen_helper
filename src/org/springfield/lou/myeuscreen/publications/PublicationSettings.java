@@ -9,4 +9,5 @@ public @interface PublicationSettings {
 	public String systemName();
 	public String readableName();
 	public String readablePlural();
+	public boolean editable();
 }

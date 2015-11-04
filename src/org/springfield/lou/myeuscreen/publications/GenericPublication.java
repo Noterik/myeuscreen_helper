@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
 
-@PublicationSettings(systemName = "", readableName = "All", readablePlural = "All")
+@PublicationSettings(systemName = "", readableName = "All", readablePlural = "All", editable = false)
 public class GenericPublication extends Publication {
 
 	private Publication actualPublication;
@@ -69,7 +69,12 @@ public class GenericPublication extends Publication {
 	@Override
 	@JSONField(field = "type")
 	public String getType() {
-		// TODO Auto-generated method stub
 		return this.actualPublication.getType();
+	}
+	
+	@Override
+	@JSONField(field = "editable")
+	public boolean getEditable(){
+		return this.actualPublication.getEditable();
 	}
 }

@@ -14,7 +14,7 @@ import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Role;
 
-@PublicationSettings(systemName = "videoposter", readableName = "Videoposter", readablePlural = "Video Posters")
+@PublicationSettings(systemName = "videoposter", readableName = "Videoposter", readablePlural = "Video Posters", editable = true)
 public class VideoPoster extends Publication {
 		
 	private String html = "";
@@ -81,13 +81,6 @@ public class VideoPoster extends Publication {
 			e.printStackTrace();
 		}
 		return poster;
-	}
-	
-	@JSONField(field = "type")
-	@Override
-	public String getType() {
-		// TODO Auto-generated method stub
-		return "videoposter";
 	}
 	
 	@Override

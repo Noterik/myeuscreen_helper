@@ -18,7 +18,6 @@ public abstract class Publication extends MappedObjectWithRights{
 	private String name;
 	private String creationDate;
 	private String image;
-	private String path;
 	
 	public Publication(){
 		
@@ -37,15 +36,26 @@ public abstract class Publication extends MappedObjectWithRights{
 	}
 	
 	@JSONField(field = "type")
-	public abstract String getType();
+	public String getType(){
+		return getClass().getAnnotation(PublicationSettings.class).systemName();
+	}
+	
+	@JSONField(field = "editable")
+	public boolean getEditable(){
+		return getClass().getAnnotation(PublicationSettings.class).editable();
+	}
 	
 	@ObjectToSmithersGetter(mapTo = "name")
-	@SortableField(field = "name")
 	@JSONField(field = "name")
 	public String getName() {
 		return name;
 	}
-
+	
+	@SortableField(field = "name")
+	public String getSortableName(){
+		return this.getName().toLowerCase();
+	}
+	
 	@SmithersToObjectSetter(mapTo = "name")
 	public void setName(String name) {
 		this.name = name;

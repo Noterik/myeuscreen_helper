@@ -13,7 +13,7 @@ import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Role;
 
-@PublicationSettings(systemName = "collection", readableName = "Collection", readablePlural = "Collections")
+@PublicationSettings(systemName = "collection", readableName = "Collection", readablePlural = "Collections", editable = true)
 public class Collection extends Publication{
 	private List<EUScreenMediaItem> items;
 	
@@ -114,17 +114,8 @@ public class Collection extends Publication{
 	}
 
 	@Override
-	@JSONField(field = "type")
-	public String getType() {
-		// TODO Auto-generated method stub
-		return "collection";
-	}
-
-	@Override
 	public void update() {
 		// TODO Auto-generated method stub
-		System.out.println("UPDATE CALLED");
-		System.out.println("OBSERVERS: " + this.getObservers().size());
 		super.update();
 	}
 	

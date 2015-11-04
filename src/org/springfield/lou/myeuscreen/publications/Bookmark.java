@@ -13,7 +13,12 @@ import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Role;
 
-@PublicationSettings(systemName = "bookmark", readableName = "Bookmark", readablePlural = "Bookmarks")
+@PublicationSettings(
+		systemName = "bookmark", 
+		readableName = "Bookmark", 
+		readablePlural = "Bookmarks", 
+		editable = false
+)
 public class Bookmark extends Publication {
 	
 	private EUScreenMediaItem item;
@@ -53,12 +58,6 @@ public class Bookmark extends Publication {
 			e.printStackTrace();
 		}
 		return bookmark;
-	}
-
-	@Override
-	public String getType() {
-		// TODO Auto-generated method stub
-		return "bookmark";
 	}
 	
 	public void setItem(EUScreenMediaItem item){
