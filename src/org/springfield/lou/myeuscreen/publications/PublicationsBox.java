@@ -130,9 +130,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 	
 	public void addPublication(Publication p) throws NoParentForMappedObjectException{
 		System.out.println("PublicationsBox.addPublication()");
-		System.out.println(p);
-		System.out.println(p.getType());
-		System.out.println("END PublicationsBox.addPublication()");
 		PublicationType pType = PublicationType.getTypeForPublication(p);
 		
 		for(PublicationType type : this.publications.keySet()){

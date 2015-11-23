@@ -65,6 +65,7 @@ public abstract class MappedObjectWithRights extends MappedObject implements Nod
 	public void giveRole(IRoleActor user, Role role) throws AlreadyHasRoleException {
 		// TODO Auto-generated method stub
 		rights.giveRole(user, role);
+		rights.save();
 	}
 
 	@Override

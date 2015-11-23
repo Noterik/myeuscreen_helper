@@ -120,6 +120,7 @@ public abstract class MappedObject extends JSONObservable {
 	
 	public void save() throws NoParentForMappedObjectException{
 		System.out.println("myeuscreen: MappedObject.save()");
+		System.out.println("parentURI: " + parentURI);
 		if(parentURI != null && Fs.getNode(parentURI) != null){
 			FsNode node = new FsNode();
 			node.setName(this.nodeName);
@@ -180,7 +181,8 @@ public abstract class MappedObject extends JSONObservable {
 		System.out.println("myeuscreen: END MappedObject.save()");
 	}
 		
-	public void save(String parentNode) throws NoParentForMappedObjectException{		
+	public void save(String parentNode) throws NoParentForMappedObjectException{	
+		System.out.println("MappedObject.save(" + parentNode + ")");
 		this.parentURI = parentNode;
 		this.save();
 	}

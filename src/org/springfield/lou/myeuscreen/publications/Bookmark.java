@@ -47,6 +47,7 @@ public class Bookmark extends Publication {
 		FsNode node = new FsNode();
 		node.setName("bookmark");
 		Bookmark bookmark = new Bookmark();
+		bookmark.setId("bookmark_" + item.getNode().getId());
 		bookmark.setCreationDate(new Date().toString());
 		bookmark.setAuthor("system");
 		bookmark.setItem(item);

@@ -123,6 +123,7 @@ public class Rights extends JSONObservable{
 			}
 		}
 		
+		System.out.println("GIVE USER: " + user.getNode().getId() + ", ROLE: " + role.getReadable());
 		this.unsavedRoles.get(role).add(user);
 		
 		System.out.println("myeuscreen: is there an entry we need to remove?");
@@ -139,6 +140,7 @@ public class Rights extends JSONObservable{
 		}else{
 			System.out.println("myeuscreen: no there isn't");
 		}
+		
 	}
 	
 	public void setParent(String parent){
