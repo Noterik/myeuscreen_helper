@@ -4,10 +4,10 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.springfield.lou.myeuscreen.publications.CollectionItem;
-
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface SmithersToObjectSetter {
+public @interface SmithersToObjectChildrenSetter {
 	String mapTo() default "";
+	Class<? extends MappedObject> type();
+	boolean ordered() default false;
 }

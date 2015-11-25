@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
+import org.springfield.lou.myeuscreen.mapping.MappingSettings;
 import org.springfield.lou.myeuscreen.mapping.NoParentForMappedObjectException;
 import org.springfield.lou.myeuscreen.mapping.ObjectToSmithersGetter;
 import org.springfield.lou.myeuscreen.mapping.SmithersToObjectSetter;
@@ -14,7 +15,8 @@ import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Role;
 
-@PublicationSettings(systemName = "videoposter", readableName = "Videoposter", readablePlural = "Video Posters", editable = true)
+@MappingSettings(systemName = "videoposter")
+@PublicationSettings(readableName = "Videoposter", readablePlural = "Video Posters", editable = true, collectable = false)
 public class VideoPoster extends Publication {
 		
 	private String html = "";
@@ -49,7 +51,6 @@ public class VideoPoster extends Publication {
 	}
 	
 	public static VideoPoster createVideoPoster(IRoleActor actor, String id, String title, String author, String html){
-		System.out.println("VideoPoster.createVideoPoster()");
 		VideoPoster poster = new VideoPoster();
 		poster.setId(id);
 		poster.setName(title);
@@ -67,7 +68,6 @@ public class VideoPoster extends Publication {
 	}
 	
 	public static VideoPoster createVideoPoster(IRoleActor actor, String title, String author, String html){
-		System.out.println("VideoPoster.createVideoPoster()");
 		VideoPoster poster = new VideoPoster();
 		poster.setName(title);
 		poster.setCreationDate(new Date().toString());

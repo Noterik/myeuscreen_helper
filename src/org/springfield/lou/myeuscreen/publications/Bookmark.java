@@ -6,6 +6,7 @@ import java.util.List;
 import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
+import org.springfield.lou.myeuscreen.mapping.MappingSettings;
 import org.springfield.lou.myeuscreen.mapping.NoParentForMappedObjectException;
 import org.springfield.lou.myeuscreen.publications.EUScreenMediaItem;
 import org.springfield.lou.myeuscreen.publications.Publication;
@@ -13,11 +14,12 @@ import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Role;
 
+@MappingSettings(systemName = "bookmark")
 @PublicationSettings(
-		systemName = "bookmark", 
 		readableName = "Bookmark", 
 		readablePlural = "Bookmarks", 
-		editable = false
+		editable = false,
+		collectable = true
 )
 public class Bookmark extends Publication {
 	

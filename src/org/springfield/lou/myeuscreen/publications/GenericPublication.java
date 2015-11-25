@@ -6,8 +6,10 @@ import java.lang.reflect.InvocationTargetException;
 import org.json.simple.JSONObject;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
+import org.springfield.lou.myeuscreen.mapping.MappingSettings;
 
-@PublicationSettings(systemName = "", readableName = "All", readablePlural = "All", editable = false)
+@MappingSettings(systemName = "")
+@PublicationSettings(readableName = "All", readablePlural = "All", editable = false, collectable = false)
 public class GenericPublication extends Publication {
 
 	private Publication actualPublication;
@@ -19,7 +21,6 @@ public class GenericPublication extends Publication {
 	
 	public GenericPublication(FsNode node) throws NoSettingsForPublicationDeclaredException {
 		super(node);
-		System.out.println("new GenericPublication()");
 		this.parseNode(node);
 	}
 	
@@ -27,8 +28,9 @@ public class GenericPublication extends Publication {
 		for(PublicationType type : PublicationType.values()){
 			Class<? extends Publication> typeClass = type.getTypeClass();
 			PublicationSettings settings = typeClass.getAnnotation(PublicationSettings.class);
+			MappingSettings mappingSettings = typeClass.getAnnotation(MappingSettings.class);
 			if(settings != null){
-				String systemName = settings.systemName();
+				String systemName = mappingSettings.systemName();
 				if(systemName.equals(node.getName())){
 					Constructor<? extends Publication> constructor;
 					try {

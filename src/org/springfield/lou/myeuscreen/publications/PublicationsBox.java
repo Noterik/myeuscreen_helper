@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.IJSONObserver;
+import org.springfield.lou.myeuscreen.mapping.MappingSettings;
 import org.springfield.lou.myeuscreen.mapping.NoParentForMappedObjectException;
 import org.springfield.lou.myeuscreen.mapping.ReferencedNodeNotExistsException;
 import org.springfield.lou.myeuscreen.pagination.PaginatedArrayList;
@@ -33,8 +34,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 	}
 	
 	public PublicationsBox(String path, HasPublicationsBox owner){
-		System.out.println("NEW PUBLICATIONSBOX()");
-		System.out.println("PATH: " + path);
 		if(Fs.getNode(path) != null){
 			this.node = Fs.getNode(path);
 		}
@@ -53,11 +52,11 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 			if(type != PublicationType.ALL){
 				try {
 					Class<? extends Publication> typeClass = type.getTypeClass();
-					PublicationSettings naming = typeClass.getAnnotation(PublicationSettings.class);
+					MappingSettings systemMapping = typeClass.getAnnotation(MappingSettings.class);
 					
 					String systemName = null;
-					if(naming != null){
-						systemName = naming.systemName();
+					if(systemMapping != null){
+						systemName = systemMapping.systemName();
 					}
 					
 					if(systemName == null){
@@ -81,7 +80,7 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 							if(actualPNode.getReferid() != null){
 								actualPNode = Fs.getNode(actualPNode.getReferid());
 							}
-							Publication newP = constructor.newInstance(actualPNode, uri);
+							Publication newP = constructor.newInstance(actualPNode, this.path);
 							newP.addObserver(this);
 							paginatedPublications.add(newP);
 							allPublications.add(newP);
@@ -129,18 +128,14 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 	}
 	
 	public void addPublication(Publication p) throws NoParentForMappedObjectException{
-		System.out.println("PublicationsBox.addPublication()");
 		PublicationType pType = PublicationType.getTypeForPublication(p);
 		
 		for(PublicationType type : this.publications.keySet()){
 			PaginatedArrayList<Publication> list = this.publications.get(type);
 			
 			for(Publication cp : list){
-				System.out.println("CP path:" + cp.getId());
-				System.out.println("P path:" + p.getId());
 
 				if(cp.getId().equals(p.getId())){
-					System.out.println("---------------INCHECK-----------");
 					deletePublication(cp);
 					break;
 				}
@@ -213,7 +208,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 
 	@Override
 	public void update(JSONObject arg0) {
-		System.out.println("COLLECTION HAS CHANGED, UPDATE THE OBSERVERS!");
 		// TODO Auto-generated method stub
 		this.setChanged();
 		this.notifyObservers();

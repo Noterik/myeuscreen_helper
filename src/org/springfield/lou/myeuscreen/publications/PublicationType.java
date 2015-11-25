@@ -1,5 +1,7 @@
 package org.springfield.lou.myeuscreen.publications;
 
+import org.springfield.lou.myeuscreen.mapping.MappingSettings;
+
 public enum PublicationType {
 	ALL (GenericPublication.class),
 	BOOKMARK (Bookmark.class),
@@ -25,8 +27,12 @@ public enum PublicationType {
 		return null;
 	}
 	
-	public PublicationSettings getSettings(){
+	public PublicationSettings getPublicationSettings(){
 		return type.getAnnotation(PublicationSettings.class);
+	}
+	
+	public MappingSettings getMappingSettings(){
+		return type.getAnnotation(MappingSettings.class);
 	}
 
 	public static PublicationType getTypeForPublication(Publication p) {

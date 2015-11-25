@@ -88,8 +88,8 @@ public class PublicationComparator implements Comparator<Publication> {
 						if(val1 instanceof Comparable && val2 instanceof Comparable){
 							Comparable<Object> comparableVal1 = (Comparable<Object>) val1;
 							Comparable<Object> comparableVal2 = (Comparable<Object>) val2;
-							
-							if(this.direction.equals(SortDirection.DOWN)){
+														
+							if(this.direction.equals(SortDirection.UP)){
 								return comparableVal1.compareTo(comparableVal2);
 							}else{
 								return comparableVal2.compareTo(comparableVal1);

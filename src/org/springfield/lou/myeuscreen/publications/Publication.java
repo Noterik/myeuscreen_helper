@@ -7,6 +7,7 @@ import java.util.Date;
 import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
+import org.springfield.lou.myeuscreen.mapping.MappingSettings;
 import org.springfield.lou.myeuscreen.mapping.ObjectToSmithersGetter;
 import org.springfield.lou.myeuscreen.mapping.SmithersToObjectSetter;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
@@ -35,9 +36,14 @@ public abstract class Publication extends MappedObjectWithRights{
 		this.setPath(node.getPath());
 	}
 	
+	@JSONField(field = "collectable")
+	public boolean getCollectable(){
+		return getClass().getAnnotation(PublicationSettings.class).collectable();
+	}
+	
 	@JSONField(field = "type")
 	public String getType(){
-		return getClass().getAnnotation(PublicationSettings.class).systemName();
+		return getClass().getAnnotation(MappingSettings.class).systemName();
 	}
 	
 	@JSONField(field = "editable")
@@ -117,8 +123,6 @@ public abstract class Publication extends MappedObjectWithRights{
 	}
 	
 	public void stopSharingWith(IRoleActor actor){
-		System.out.println("myeuscreen: stopSharingWith()");
-		System.out.println(actor);
 		String uri = actor.getNode().getPath();
 		uri += "/publications/1/" + this.getType() + "/" + this.id;
 		Fs.deleteNode(uri);

@@ -35,7 +35,6 @@ public class Rights extends JSONObservable{
 	}
 	
 	public Rights(FsNode parentNode, IRoleActor user) throws AlreadyHasRoleException{
-		System.out.println("Rights()");
 		roles = new HashMap<Role, ArrayList<IRoleActor>>();
 		unsavedRoles = new HashMap<Role, ArrayList<IRoleActor>>();
 		node = new FsNode();
@@ -66,7 +65,6 @@ public class Rights extends JSONObservable{
 	}
 	
 	public Rights(FsNode rightsNode) throws IncorrectRightsNodeFormatException{
-		System.out.println("Rights(" + rightsNode.getPath() + ")");
 		roles = new HashMap<Role, ArrayList<IRoleActor>>();
 		unsavedRoles = new HashMap<Role, ArrayList<IRoleActor>>();
 		this.parseNode(rightsNode);
@@ -89,56 +87,40 @@ public class Rights extends JSONObservable{
 	}
 	
 	public void giveRole(IRoleActor user, Role role) throws AlreadyHasRoleException{
-		System.out.println("myeuscreen: " + user.getNode().getPath() + " give role " + role.getRoleId());
 		
 		ArrayList<String> entriesToRemove = new ArrayList<String>();
 		
-		System.out.println("myeuscreen: check if this user already has the assigned role!");
 		if(unsavedRoles.get(role) != null){
 			if(roles.get(role) != null){
 				for(IRoleActor curActor : roles.get(role)){
 					if(curActor.getNode().getPath().equals(user.getNode().getPath())){
-						System.out.println("myeuscreen: the user already has the assigned role!");
 						throw new AlreadyHasRoleException("Actor " + curActor.getNode().getPath() + " already has role " + role.getRoleId());
 					}
 				}
 			}
 		}else{
-			System.out.println("myeuscreen: the user doesn't have the assigned role");
 			unsavedRoles.put(role, new ArrayList<IRoleActor>());
 		}
 		
-		System.out.println("myeuscreen: lets check if the user already has another role");
 		for(Role r : roles.keySet()){
-			System.out.println("myeuscreen: lets check if the user already has role : " + r.getRoleId());
 			List<IRoleActor> actors = roles.get(r);
 			for(IRoleActor actor : actors){
 				if(actor.getNode().getReferid().equals(user.getNode().getPath())){
-					System.out.println("myeuscreen: yes");
-					System.out.println("myeuscreen: FOUND A USER TO REMOVE: " + actor.getNode().getPath());
 					entriesToRemove.add(actor.getNode().getPath());
-				}else{
-					System.out.println("myeuscreen: no");
 				}
 			}
 		}
 		
-		System.out.println("GIVE USER: " + user.getNode().getId() + ", ROLE: " + role.getReadable());
 		this.unsavedRoles.get(role).add(user);
 		
-		System.out.println("myeuscreen: is there an entry we need to remove?");
 		if(entriesToRemove.size() > 0){
-			System.out.println("myeuscreen: yes there is");
 			for(String path : entriesToRemove){
-				System.out.println("myeuscreen: remove: " + path);
 				Class<Fs> fsClass = Fs.class;
 				for(Method m : fsClass.getDeclaredMethods()){
 					System.out.println("myeuscreen method: " + m.getName());
 				}
 				Fs.deleteNode(path);
 			}
-		}else{
-			System.out.println("myeuscreen: no there isn't");
 		}
 		
 	}
@@ -152,7 +134,6 @@ public class Rights extends JSONObservable{
 	}
 	
 	public void save(){
-		System.out.println("Rights.save()");
 		String path = node.getPath();
 		String creationDate = new Date().toString();
 		if(path != null){
@@ -212,8 +193,6 @@ public class Rights extends JSONObservable{
 			FsNode node = Fs.getNode(this.path);
 			if(node != null){
 				this.parseNode(node);
-			}else{
-				System.out.println("myeuscreen: THE RESULT FOR PATH: " + this.path + " = NULL");
 			}
 		} catch (IncorrectRightsNodeFormatException e) {
 			// TODO Auto-generated catch block
@@ -222,7 +201,6 @@ public class Rights extends JSONObservable{
 	}
 	
 	private void parseNode(FsNode rightsNode) throws IncorrectRightsNodeFormatException{
-		System.out.println("myeuscreen.parseNode(" + rightsNode.asXML() + ")");
 		if(!rightsNode.getName().equals("rights")){
 			throw new IncorrectRightsNodeFormatException("The node name is not <rights>, please check if you're passing the correct node, node passed: " + rightsNode.asXML());
 		}else{
@@ -256,8 +234,6 @@ public class Rights extends JSONObservable{
 	
 	@Override
 	public void addObserver(IJSONObserver observer) {
-		System.out.println("myeuscreen: OBJECT ID: " + this.hashCode());
-		System.out.println("myeuscreen: ADD OBSERVER: " + observer.getClass().getName());
 		// TODO Auto-generated method stub
 		super.addObserver(observer);
 	}
@@ -281,7 +257,6 @@ public class Rights extends JSONObservable{
 	}
 
 	public void removeRightsForActor(IRoleActor actor) {
-		System.out.println("myeuscreen: remove rights for actor: " + actor.getNode().getPath());
 		// TODO Auto-generated method stub
 		for(ArrayList<IRoleActor> actors : roles.values()){
 			for(IRoleActor cActor : actors){

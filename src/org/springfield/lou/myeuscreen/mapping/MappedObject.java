@@ -1,8 +1,13 @@
 package org.springfield.lou.myeuscreen.mapping;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -10,6 +15,7 @@ import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
 import org.springfield.lou.json.JSONObservable;
+import org.springfield.lou.myeuscreen.publications.Collection;
 
 public abstract class MappedObject extends JSONObservable {
 	
@@ -17,6 +23,7 @@ public abstract class MappedObject extends JSONObservable {
 	private String nodeName;
 	private String parentURI = null;
 	private String path = null;
+	private Integer order = null;
 	
 	public MappedObject(){
 		id = null;
@@ -48,6 +55,8 @@ public abstract class MappedObject extends JSONObservable {
 						e.printStackTrace();
 					}
 				}
+			}else if(method.isAnnotationPresent(SmithersToObjectChildrenSetter.class)){
+				
 			}
 		}
  	}
@@ -63,13 +72,12 @@ public abstract class MappedObject extends JSONObservable {
 	}
 	
 	public MappedObject(FsNode node){
-		
+		System.out.println("new MappedObject(" + node.getPath() + ")");
 		parseSmithersName();
 		
 		for(Method method : this.getClass().getMethods()){
 			if(method.isAnnotationPresent(SmithersToObjectSetter.class)){
-				Annotation annotation = method.getAnnotation(SmithersToObjectSetter.class);
-				SmithersToObjectSetter mapping = (SmithersToObjectSetter) annotation;
+				SmithersToObjectSetter mapping = method.getAnnotation(SmithersToObjectSetter.class);
 				String fieldName = mapping.mapTo();
 				
 				try {
@@ -77,10 +85,47 @@ public abstract class MappedObject extends JSONObservable {
 						method.invoke(this, node.getId());
 					}else if(fieldName.equals("@referid")){
 						method.invoke(this, node.getReferid());
-					}else{
+					}else if(!fieldName.isEmpty()){
 						method.invoke(this, node.getProperty(fieldName));
 					}
 				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else if(method.isAnnotationPresent(SmithersToObjectChildrenSetter.class)){
+				System.out.println("FOUND A CHILDREN SETTER!");
+				SmithersToObjectChildrenSetter setter = method.getAnnotation(SmithersToObjectChildrenSetter.class);
+				Class<? extends MappedObject> type = setter.type();
+				System.out.println("TYPE: " + type.getName());
+				System.out.println("MAPPING SETTINGS: " + type.getAnnotation(MappingSettings.class));
+				try {
+					Constructor<? extends MappedObject> constructor = type.getConstructor(FsNode.class);
+					MappingSettings mappingSettings = type.getAnnotation(MappingSettings.class);
+					String systemName = mappingSettings.systemName();
+					List<FsNode> childrenNodes = Fs.getNodes(node.getPath() + "/" + systemName, 1);
+					ArrayList<MappedObject> children = new ArrayList<MappedObject>();
+					for(FsNode childNode : childrenNodes){
+						MappedObject child = constructor.newInstance(childNode);
+						children.add(child);
+					}
+					System.out.println("CHILDREN: " + children);
+					method.invoke(this, children);
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InstantiationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
@@ -104,6 +149,9 @@ public abstract class MappedObject extends JSONObservable {
 	
 	public MappedObject(FsNode node, String parent){
 		this(node);
+		if(this.getClass().equals(Collection.class)){
+			System.out.println("new MappedObject(" + node.getPath() + ", " + parent + ")");
+		}
 		this.parentURI = parent;
 		this.path = node.getPath();
 	}
@@ -121,7 +169,9 @@ public abstract class MappedObject extends JSONObservable {
 	public void save() throws NoParentForMappedObjectException{
 		System.out.println("myeuscreen: MappedObject.save()");
 		System.out.println("parentURI: " + parentURI);
-		if(parentURI != null && Fs.getNode(parentURI) != null){
+		if(parentURI != null && (Fs.getNode(parentURI) != null || Fs.getNodes(parentURI, 1).size() > 0)){
+			List<FsNode> referNodes = new ArrayList<FsNode>();
+			List<MappedObject> children = new ArrayList<MappedObject>();
 			FsNode node = new FsNode();
 			node.setName(this.nodeName);
 			
@@ -133,21 +183,73 @@ public abstract class MappedObject extends JSONObservable {
 			
 			for(Method method : this.getClass().getMethods()){
 				Annotation[] annotations = method.getDeclaredAnnotations();
+				System.out.println("METHOD: " + method.getName());
 				for(Annotation annotation : annotations){
+					System.out.println(annotation.annotationType().getName());
 					if(annotation.annotationType().equals(ObjectToSmithersGetter.class)){
 						ObjectToSmithersGetter getter = (ObjectToSmithersGetter) annotation;
 						String smithersPropName = getter.mapTo();
+						System.out.println("SMITHERS PROP NAME: " + smithersPropName);
+						if(smithersPropName != null && !smithersPropName.isEmpty()){
+							System.out.println("THIS ONE IS MAPPED TO A FIELD!");
+							try {
+								Object results = method.invoke(this);
+								String resultsStr = "";
+								if(results != null){
+									try{
+										resultsStr = (String) results;
+									}catch(ClassCastException cce){
+										resultsStr = results.toString();
+									}
+								}
+								node.setProperty(smithersPropName, resultsStr);
+							} catch (IllegalArgumentException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (IllegalAccessException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (InvocationTargetException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}else if(annotation.annotationType().equals(SmithersReference.class)){
+						if(method.getReturnType().equals(FsNode.class)){
+							try {
+								FsNode referredNode = (FsNode) method.invoke(this);
+								referNodes.add(referredNode);
+							} catch (IllegalArgumentException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (IllegalAccessException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (InvocationTargetException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch(NullPointerException e){
+								e.printStackTrace();
+							}
+						}
+					}else if(annotation.annotationType().equals(ObjectChildrenToSmithersGetter.class)){
 						try {
 							Object results = method.invoke(this);
-							String resultsStr = "";
-							if(results != null){
-								try{
-									resultsStr = (String) results;
-								}catch(ClassCastException cce){
-									resultsStr = results.toString();
+							ObjectChildrenToSmithersGetter getter = (ObjectChildrenToSmithersGetter) annotation;
+							boolean ordered = getter.ordered();
+							if(List.class.isAssignableFrom(results.getClass())){
+								int i = 0;
+								List<Object> castedResults = (List<Object>) results;
+								for(Object result : castedResults){
+									if(MappedObject.class.isAssignableFrom(result.getClass())){
+										MappedObject resultObj = (MappedObject) result;
+										if(ordered)
+											resultObj.setOrder(i);
+										children.add(resultObj);
+									}
+									i++;
 								}
 							}
-							node.setProperty(smithersPropName, resultsStr);
 						} catch (IllegalArgumentException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -163,6 +265,7 @@ public abstract class MappedObject extends JSONObservable {
 				
 			}
 			
+			
 			this.path = this.parentURI + "/" + this.nodeName + "/" + this.getId();
 			System.out.println("PATH: " + this.path);
 			if(Fs.getNode(path) != null){
@@ -172,7 +275,26 @@ public abstract class MappedObject extends JSONObservable {
 			
 			System.out.println("XML: " + node.asXML());
 			
+			if(this.order() != null){
+				node.setProperty("myeuscreen_child_order", this.order().toString());
+			}
+			
 			Fs.insertNode(node, this.parentURI);
+			
+			for(Iterator<FsNode> referenceIterator = referNodes.iterator(); referenceIterator.hasNext();){
+				FsNode referedNode = referenceIterator.next();
+				FsNode newReferingNode = new FsNode();
+				newReferingNode.setName(referedNode.getName());
+				newReferingNode.setId(referedNode.getId());
+				newReferingNode.setReferid(referedNode.getPath());
+				Fs.insertNode(newReferingNode, path);
+			}
+			
+			for(Iterator<MappedObject> childrenIterator = children.iterator(); childrenIterator.hasNext();){
+				MappedObject child = childrenIterator.next();
+				child.save(path);
+			}
+			
 			this.setPath(path);
 		}else{
 			throw new NoParentForMappedObjectException("Please provide a correct parent for this object, parent given: " + this.parentURI);
@@ -202,6 +324,14 @@ public abstract class MappedObject extends JSONObservable {
 		}else{
 			throw new ReferencedNodeNotExistsException("The node your trying to create a reference for doesn't exist yet!");
 		}
+	}
+	
+	public void setOrder(Integer order){
+		this.order = order;
+	}
+	
+	public Integer order(){
+		return this.order;
 	}
 	
 	public String getNodeName(){
@@ -236,4 +366,5 @@ public abstract class MappedObject extends JSONObservable {
 		}
 		this.path = path;
 	}
+
 }
