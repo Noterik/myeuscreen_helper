@@ -99,11 +99,8 @@ public abstract class MappedObject extends JSONObservable {
 					e.printStackTrace();
 				}
 			}else if(method.isAnnotationPresent(SmithersToObjectChildrenSetter.class)){
-				System.out.println("FOUND A CHILDREN SETTER!");
 				SmithersToObjectChildrenSetter setter = method.getAnnotation(SmithersToObjectChildrenSetter.class);
 				Class<? extends MappedObject> type = setter.type();
-				System.out.println("TYPE: " + type.getName());
-				System.out.println("MAPPING SETTINGS: " + type.getAnnotation(MappingSettings.class));
 				try {
 					Constructor<? extends MappedObject> constructor = type.getConstructor(FsNode.class);
 					MappingSettings mappingSettings = type.getAnnotation(MappingSettings.class);
@@ -114,7 +111,6 @@ public abstract class MappedObject extends JSONObservable {
 						MappedObject child = constructor.newInstance(childNode);
 						children.add(child);
 					}
-					System.out.println("CHILDREN: " + children);
 					method.invoke(this, children);
 				} catch (SecurityException e) {
 					// TODO Auto-generated catch block
@@ -327,6 +323,7 @@ public abstract class MappedObject extends JSONObservable {
 	}
 	
 	public void setOrder(Integer order){
+		System.out.println(this.getClass().getName() + ".setOrder(" + order + ")");
 		this.order = order;
 	}
 	

@@ -76,7 +76,7 @@ public class Collection extends Publication {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	@JSONField(field = "items")
 	@ObjectChildrenToSmithersGetter(ordered = true)
 	public List<CollectionItem> getItems() {
@@ -142,14 +142,20 @@ public class Collection extends Publication {
 		}
 
 	}
+	
+	public void removeItemById(String id){
+		CollectionItem itemToRemove = null;
+		for(CollectionItem item : this.items){
+			if(item.getId().equals(id)){
+				itemToRemove = item;
+			}
+		}
+		if(itemToRemove != null)
+			this.items.remove(itemToRemove);	
+	}
 
 	private void populateImage() {
-		try {
-			this.setImage((String) this.items.get(1).getEUScreenItem()
-					.get("screenshot"));
-		} catch (IndexOutOfBoundsException e) {
-			this.setImage(null);
-		}
+		
 	}
 
 	@Override
