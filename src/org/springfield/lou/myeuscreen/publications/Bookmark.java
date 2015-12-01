@@ -67,6 +67,11 @@ public class Bookmark extends Publication {
 		this.item = item;
 	}
 	
+	@JSONField(field = "euscreenId")
+	public String getEuscreenId(){
+		return (String) this.item.getNode().getId();
+	}
+	
 	public EUScreenMediaItem getItem(){
 		return this.item;
 	}

@@ -46,8 +46,6 @@ public class Collection extends Publication {
 
 	public static Collection createCollection(IRoleActor actor, String author,
 			String name, String description) {
-		System.out.println("Collection.createCollection(" + actor + ", "
-				+ author + ", " + name + ", " + description + ")");
 		Collection col = new Collection();
 		Date date = new Date();
 		col.setAuthor(author);
@@ -62,7 +60,6 @@ public class Collection extends Publication {
 			e.printStackTrace();
 		}
 
-		System.out.println("END Collection.createCollection()");
 		return col;
 	}
 
@@ -104,7 +101,6 @@ public class Collection extends Publication {
 	}
 
 	public void addItem(EUScreenMediaItem item) {
-		System.out.println("Collection.addItem(" + item + ")");
 		if (!this.contains(item.getNode().getId()) && this.getPath() != null) {
 			CollectionItem colItem = CollectionItem.createCollectionItem(this,
 					item.getNode().getId(), item);
@@ -125,7 +121,6 @@ public class Collection extends Publication {
 	}
 
 	private void populateItems() {
-		System.out.println("POPULATE ITEMS!");
 		this.items = new ArrayList<CollectionItem>();
 		try {
 			FSList rawItems = FSListManager.get(this.getPath() + "/collectionitem", false);

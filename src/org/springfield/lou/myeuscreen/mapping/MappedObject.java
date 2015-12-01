@@ -72,7 +72,6 @@ public abstract class MappedObject extends JSONObservable {
 	}
 	
 	public MappedObject(FsNode node){
-		System.out.println("new MappedObject(" + node.getPath() + ")");
 		parseSmithersName();
 		
 		for(Method method : this.getClass().getMethods()){
@@ -145,9 +144,6 @@ public abstract class MappedObject extends JSONObservable {
 	
 	public MappedObject(FsNode node, String parent){
 		this(node);
-		if(this.getClass().equals(Collection.class)){
-			System.out.println("new MappedObject(" + node.getPath() + ", " + parent + ")");
-		}
 		this.parentURI = parent;
 		this.path = node.getPath();
 	}
@@ -163,8 +159,6 @@ public abstract class MappedObject extends JSONObservable {
 	}
 	
 	public void save() throws NoParentForMappedObjectException{
-		System.out.println("myeuscreen: MappedObject.save()");
-		System.out.println("parentURI: " + parentURI);
 		if(parentURI != null && (Fs.getNode(parentURI) != null || Fs.getNodes(parentURI, 1).size() > 0)){
 			List<FsNode> referNodes = new ArrayList<FsNode>();
 			List<MappedObject> children = new ArrayList<MappedObject>();
@@ -179,15 +173,11 @@ public abstract class MappedObject extends JSONObservable {
 			
 			for(Method method : this.getClass().getMethods()){
 				Annotation[] annotations = method.getDeclaredAnnotations();
-				System.out.println("METHOD: " + method.getName());
 				for(Annotation annotation : annotations){
-					System.out.println(annotation.annotationType().getName());
 					if(annotation.annotationType().equals(ObjectToSmithersGetter.class)){
 						ObjectToSmithersGetter getter = (ObjectToSmithersGetter) annotation;
 						String smithersPropName = getter.mapTo();
-						System.out.println("SMITHERS PROP NAME: " + smithersPropName);
 						if(smithersPropName != null && !smithersPropName.isEmpty()){
-							System.out.println("THIS ONE IS MAPPED TO A FIELD!");
 							try {
 								Object results = method.invoke(this);
 								String resultsStr = "";
@@ -263,13 +253,10 @@ public abstract class MappedObject extends JSONObservable {
 			
 			
 			this.path = this.parentURI + "/" + this.nodeName + "/" + this.getId();
-			System.out.println("PATH: " + this.path);
 			if(Fs.getNode(path) != null){
-				System.out.println("myeuscreen: it already exists, delete the existing node");
 				Fs.deleteNode(path);
 			}
 			
-			System.out.println("XML: " + node.asXML());
 			
 			if(this.order() != null){
 				node.setProperty("myeuscreen_child_order", this.order().toString());
@@ -296,11 +283,9 @@ public abstract class MappedObject extends JSONObservable {
 			throw new NoParentForMappedObjectException("Please provide a correct parent for this object, parent given: " + this.parentURI);
 		}
 			
-		System.out.println("myeuscreen: END MappedObject.save()");
 	}
 		
 	public void save(String parentNode) throws NoParentForMappedObjectException{	
-		System.out.println("MappedObject.save(" + parentNode + ")");
 		this.parentURI = parentNode;
 		this.save();
 	}
@@ -323,7 +308,6 @@ public abstract class MappedObject extends JSONObservable {
 	}
 	
 	public void setOrder(Integer order){
-		System.out.println(this.getClass().getName() + ".setOrder(" + order + ")");
 		this.order = order;
 	}
 	
