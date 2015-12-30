@@ -50,13 +50,19 @@ public class VideoPoster extends Publication {
 		this.html = html;
 	}
 	
-	public static VideoPoster createVideoPoster(IRoleActor actor, String id, String title, String author, String html){
+	public static VideoPoster createVideoPoster(IRoleActor actor, String id, String title, String author, String html, String layout, String theme){
 		VideoPoster poster = new VideoPoster();
 		poster.setId(id);
 		poster.setName(title);
 		poster.setCreationDate(new Date().toString());
 		poster.setAuthor(author);
 		poster.setHTML(html);
+		poster.setLayout(layout);
+		poster.setTheme(theme);
+		
+		System.out.println("================== VIDEO POSTER ===================");
+		System.out.println(layout);
+		System.out.println(theme);
 		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);
@@ -67,12 +73,18 @@ public class VideoPoster extends Publication {
 		return poster;
 	}
 	
-	public static VideoPoster createVideoPoster(IRoleActor actor, String title, String author, String html){
+	public static VideoPoster createVideoPoster(IRoleActor actor, String title, String author, String html, String layout, String theme){
 		VideoPoster poster = new VideoPoster();
 		poster.setName(title);
 		poster.setCreationDate(new Date().toString());
 		poster.setAuthor(author);
 		poster.setHTML(html);
+		poster.setLayout(layout);
+		poster.setTheme(theme);
+		
+		System.out.println("================== VIDEO POSTER 2===================");
+		System.out.println(layout);
+		System.out.println(theme);
 		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);

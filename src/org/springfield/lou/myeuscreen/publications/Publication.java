@@ -19,6 +19,8 @@ public abstract class Publication extends MappedObjectWithRights{
 	private String name;
 	private String creationDate;
 	private String image;
+	private String layout;
+	private String theme;
 	
 	public Publication(){
 		
@@ -100,6 +102,28 @@ public abstract class Publication extends MappedObjectWithRights{
 	@JSONField(field="author")
 	public String getAuthor(){
 		return this.author;
+	}
+	
+	@SmithersToObjectSetter(mapTo = "layout")
+	public void setLayout(String layout) {
+		this.layout = layout;
+	}
+
+	@ObjectToSmithersGetter(mapTo = "layout")
+	@JSONField(field="layout")
+	public String getLayout(){
+		return this.layout;
+	}
+	
+	@SmithersToObjectSetter(mapTo = "theme")
+	public void setTheme(String theme) {
+		this.theme = theme;
+	}
+
+	@ObjectToSmithersGetter(mapTo = "theme")
+	@JSONField(field="theme")
+	public String getTheme(){
+		return this.theme;
 	}
 	
 	@JSONField(field="id")
