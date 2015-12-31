@@ -60,10 +60,6 @@ public class VideoPoster extends Publication {
 		poster.setLayout(layout);
 		poster.setTheme(theme);
 		
-		System.out.println("================== VIDEO POSTER ===================");
-		System.out.println(layout);
-		System.out.println(theme);
-		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);
 		} catch (AlreadyHasRoleException e) {
@@ -81,10 +77,6 @@ public class VideoPoster extends Publication {
 		poster.setHTML(html);
 		poster.setLayout(layout);
 		poster.setTheme(theme);
-		
-		System.out.println("================== VIDEO POSTER 2===================");
-		System.out.println(layout);
-		System.out.println(theme);
 		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);
