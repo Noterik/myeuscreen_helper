@@ -78,6 +78,7 @@ public class PublicationComparator implements Comparator<Publication> {
 				Annotation annotation = method.getAnnotation(SortableField.class);
 				SortableField sortableFieldAnnotation = (SortableField) annotation;
 				String fieldName = sortableFieldAnnotation.field();
+				Boolean invert = sortableFieldAnnotation.invert();
 				
 				if(fieldName.equals(this.field)){
 					try {
@@ -88,11 +89,10 @@ public class PublicationComparator implements Comparator<Publication> {
 						if(val1 instanceof Comparable && val2 instanceof Comparable){
 							Comparable<Object> comparableVal1 = (Comparable<Object>) val1;
 							Comparable<Object> comparableVal2 = (Comparable<Object>) val2;
-														
 							if(this.direction.equals(SortDirection.UP)){
-								return comparableVal1.compareTo(comparableVal2);
+								return invert ? comparableVal2.compareTo(comparableVal1) : comparableVal1.compareTo(comparableVal2);
 							}else{
-								return comparableVal2.compareTo(comparableVal1);
+								return invert ? comparableVal1.compareTo(comparableVal2) : comparableVal2.compareTo(comparableVal1);
 							}
 						}
 

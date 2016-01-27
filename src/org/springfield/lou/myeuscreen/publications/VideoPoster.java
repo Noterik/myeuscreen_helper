@@ -1,6 +1,5 @@
 package org.springfield.lou.myeuscreen.publications;
 
-import java.net.URLEncoder;
 import java.util.Date;
 
 import org.springfield.fs.Fs;
@@ -10,8 +9,6 @@ import org.springfield.lou.myeuscreen.mapping.MappingSettings;
 import org.springfield.lou.myeuscreen.mapping.NoParentForMappedObjectException;
 import org.springfield.lou.myeuscreen.mapping.ObjectToSmithersGetter;
 import org.springfield.lou.myeuscreen.mapping.SmithersToObjectSetter;
-import org.springfield.lou.myeuscreen.publications.EUScreenMediaItem;
-import org.springfield.lou.myeuscreen.publications.Publication;
 import org.springfield.lou.myeuscreen.rights.AlreadyHasRoleException;
 import org.springfield.lou.myeuscreen.rights.IRoleActor;
 import org.springfield.lou.myeuscreen.rights.Role;

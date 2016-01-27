@@ -69,7 +69,7 @@ public abstract class Publication extends MappedObjectWithRights{
 		this.name = name;
 	}
 	
-	@SortableField(field = "creationDate")
+	@SortableField(field = "creationDate", invert = true)
 	public Long getSortableCreationDate(){
 		SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 		Date d;
