@@ -79,14 +79,8 @@ public class VideoPoster extends Publication {
 		poster.setHTML(html);
 		poster.setLayout(layout);
 		poster.setTheme(theme);
-<<<<<<< Updated upstream
-=======
+
 		poster.setImage(icon);
-				
-		System.out.println("================== VIDEO POSTER 2===================");
-		System.out.println(layout);
-		System.out.println(theme);
->>>>>>> Stashed changes
 		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);
