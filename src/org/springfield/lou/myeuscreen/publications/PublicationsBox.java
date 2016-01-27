@@ -176,9 +176,11 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 		for(PublicationType type : this.publications.keySet()){
 			PaginatedArrayList<Publication> list = this.publications.get(type);
 			for(Publication cp : list){
-				if(cp.getPath().equals(p.getPath())){
-					pubToRemove = cp;
-					listToRemoveFrom = list;
+				if(cp != null && p != null){
+					if(cp.getPath().equals(p.getPath())){
+						pubToRemove = cp;
+						listToRemoveFrom = list;
+					}
 				}
 			}
 		}

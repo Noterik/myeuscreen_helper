@@ -1,5 +1,6 @@
 package org.springfield.lou.myeuscreen.publications;
 
+import java.net.URLEncoder;
 import java.util.Date;
 
 import org.springfield.fs.Fs;
@@ -50,7 +51,7 @@ public class VideoPoster extends Publication {
 		this.html = html;
 	}
 	
-	public static VideoPoster createVideoPoster(IRoleActor actor, String id, String title, String author, String html, String layout, String theme){
+	public static VideoPoster createVideoPoster(IRoleActor actor, String id, String title, String author, String html, String layout, String theme, String icon){
 		VideoPoster poster = new VideoPoster();
 		poster.setId(id);
 		poster.setName(title);
@@ -59,6 +60,7 @@ public class VideoPoster extends Publication {
 		poster.setHTML(html);
 		poster.setLayout(layout);
 		poster.setTheme(theme);
+		poster.setImage(icon);
 		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);
@@ -69,7 +71,7 @@ public class VideoPoster extends Publication {
 		return poster;
 	}
 	
-	public static VideoPoster createVideoPoster(IRoleActor actor, String title, String author, String html, String layout, String theme){
+	public static VideoPoster createVideoPoster(IRoleActor actor, String title, String author, String html, String layout, String theme, String icon){
 		VideoPoster poster = new VideoPoster();
 		poster.setName(title);
 		poster.setCreationDate(new Date().toString());
@@ -77,6 +79,14 @@ public class VideoPoster extends Publication {
 		poster.setHTML(html);
 		poster.setLayout(layout);
 		poster.setTheme(theme);
+<<<<<<< Updated upstream
+=======
+		poster.setImage(icon);
+				
+		System.out.println("================== VIDEO POSTER 2===================");
+		System.out.println(layout);
+		System.out.println(theme);
+>>>>>>> Stashed changes
 		
 		try {
 			poster.getRights().giveRole(actor, Role.OWNER);
@@ -86,7 +96,8 @@ public class VideoPoster extends Publication {
 		}
 		return poster;
 	}
-	
+
+
 	@Override
 	public void save() throws NoParentForMappedObjectException {
 		// TODO Auto-generated method stub
