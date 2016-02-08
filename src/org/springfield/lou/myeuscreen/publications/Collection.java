@@ -101,6 +101,7 @@ public class Collection extends Publication {
 	}
 
 	public void addItem(EUScreenMediaItem item) {
+		//System.out.println("Collection.addItem(" + item + ")");
 		if (!this.contains(item.getNode().getId()) && this.getPath() != null) {
 			CollectionItem colItem = CollectionItem.createCollectionItem(this,
 					item.getNode().getId(), item);
@@ -133,7 +134,7 @@ public class Collection extends Publication {
 					items.add(new CollectionItem(node));
 			}
 		} catch (NullPointerException npe) {
-			npe.printStackTrace();
+			System.out.println("No items for this collection yet!");
 		}
 
 	}

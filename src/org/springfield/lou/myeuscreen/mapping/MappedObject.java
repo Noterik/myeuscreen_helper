@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,23 +14,21 @@ import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 import org.springfield.lou.json.JSONField;
 import org.springfield.lou.json.JSONObservable;
-import org.springfield.lou.myeuscreen.publications.Collection;
 
 public abstract class MappedObject extends JSONObservable {
-	
-	private String id;
+
+	private String id = null;
 	private String nodeName;
 	private String parentURI = null;
 	private String path = null;
 	private Integer order = null;
+	private FsNode node = null;
 	
 	public MappedObject(){
-		id = null;
 		parseSmithersName();
 	}
 	
 	public MappedObject(Map<String, Object> properties){
-		id = null;
 		
 		parseSmithersName();
 		
@@ -69,6 +66,10 @@ public abstract class MappedObject extends JSONObservable {
 	public MappedObject(Map<String, Object> properties, String parent){
 		this(properties);
 		this.parentURI = parent;
+	}
+	
+	public FsNode getNode(){
+		return this.node;
 	}
 	
 	public MappedObject(FsNode node){
@@ -132,25 +133,18 @@ public abstract class MappedObject extends JSONObservable {
 				}
 			}
 		}
-		
+		this.node = node;
 		this.path = node.getPath();
 	}
 	
 	public MappedObject(FsNode node, FsNode parent){
 		this(node);
 		this.parentURI = parent.getPath();
-		this.path = node.getPath();
 	}
 	
 	public MappedObject(FsNode node, String parent){
 		this(node);
 		this.parentURI = parent;
-		this.path = node.getPath();
-	}
-	
-	@SmithersToObjectSetter(mapTo = "@id")
-	public void setId(String id){
-		this.id = id;
 	}
 	
 	@JSONField(field = "id")
@@ -158,37 +152,117 @@ public abstract class MappedObject extends JSONObservable {
 		return this.id;
 	}
 	
+	public void setId(String id){
+		this.id = id;
+	}
+	
+	@JSONField(field = "path")
+	public String getPath(){
+		if(this.node != null){
+			return node.getPath();
+		}
+		return null;
+	}
+	
+	public void setNode(FsNode node){
+		this.node = node;
+	}
+	
 	public void save() throws NoParentForMappedObjectException{
+		//System.out.println("MappedObject.save()");
+		//System.out.println("MappedObject.save(): LETS SAVE THIS NODE: " + this.getNodeName() + "/" + this.getId());
+		//System.out.println("MappedObject.save(): PARENT URI = " + parentURI);
 		if(parentURI != null && (Fs.getNode(parentURI) != null || Fs.getNodes(parentURI, 1).size() > 0)){
-			List<FsNode> referNodes = new ArrayList<FsNode>();
-			List<MappedObject> children = new ArrayList<MappedObject>();
-			FsNode node = new FsNode();
-			node.setName(this.nodeName);
 			
-			if(this.getId() == null){
-				this.setId(UUID.randomUUID().toString());
+			if(this.getNode() == null){
+				//System.out.println("MappedObject.save(): LET'S CREATE A NEW NODE!");
+				FsNode newNode = new FsNode();
+				newNode.setName(this.nodeName);
+				
+				if(this.getId() == null){
+					//System.out.println("MappedObject.save(): LET'S CREATE A NEW IDENTIFIER!");
+					this.setId(UUID.randomUUID().toString());
+				}
+				
+				//System.out.println("MappedObject.save(): THE NEW IDENTIFIER = " + this.getId());
+				newNode.setId(this.getId());
+				if(Fs.insertNode(newNode, parentURI)){
+					//System.out.println("MappedObject.save(): NEW NODE INSERTED!");
+					this.setNode(Fs.getNode(parentURI + "/" + this.nodeName + "/" + this.getId()));
+				}
 			}
 			
-			node.setId(this.getId());
+			//System.out.println("MappedObject.save(): THE NODE ALREADY EXISTS!");
+			List<FsNode> referNodes = new ArrayList<FsNode>();
+			List<MappedObject> children = new ArrayList<MappedObject>();
 			
-			for(Method method : this.getClass().getMethods()){
-				Annotation[] annotations = method.getDeclaredAnnotations();
-				for(Annotation annotation : annotations){
-					if(annotation.annotationType().equals(ObjectToSmithersGetter.class)){
-						ObjectToSmithersGetter getter = (ObjectToSmithersGetter) annotation;
-						String smithersPropName = getter.mapTo();
-						if(smithersPropName != null && !smithersPropName.isEmpty()){
+			if(this.getNode() != null){
+				for(Method method : this.getClass().getMethods()){
+					Annotation[] annotations = method.getDeclaredAnnotations();
+					for(Annotation annotation : annotations){
+						if(annotation.annotationType().equals(ObjectToSmithersGetter.class)){
+							ObjectToSmithersGetter getter = (ObjectToSmithersGetter) annotation;
+							String smithersPropName = getter.mapTo();
+							if(smithersPropName != null && !smithersPropName.isEmpty()){
+								try {
+									Object results = method.invoke(this);
+									String resultsStr = "";
+									if(results != null){
+										try{
+											resultsStr = (String) results;
+										}catch(ClassCastException cce){
+											resultsStr = results.toString();
+										}
+									}
+									//System.out.println("MappedObject.save(): LET'S UPDATE PROPERTY = " + smithersPropName + " TO = " + resultsStr + ", FOR NODE = " + this.getPath());
+									Fs.setProperty(this.getPath(), smithersPropName, resultsStr);
+								} catch (IllegalArgumentException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (InvocationTargetException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}else if(annotation.annotationType().equals(SmithersReference.class)){
+							if(method.getReturnType().equals(FsNode.class)){
+								try {
+									FsNode referredNode = (FsNode) method.invoke(this);
+									referNodes.add(referredNode);
+								} catch (IllegalArgumentException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (InvocationTargetException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch(NullPointerException e){
+									e.printStackTrace();
+								}
+							}
+						}else if(annotation.annotationType().equals(ObjectChildrenToSmithersGetter.class)){
 							try {
 								Object results = method.invoke(this);
-								String resultsStr = "";
-								if(results != null){
-									try{
-										resultsStr = (String) results;
-									}catch(ClassCastException cce){
-										resultsStr = results.toString();
+								ObjectChildrenToSmithersGetter getter = (ObjectChildrenToSmithersGetter) annotation;
+								boolean ordered = getter.ordered();
+								if(List.class.isAssignableFrom(results.getClass())){
+									int i = 0;
+									List<Object> castedResults = (List<Object>) results;
+									for(Object result : castedResults){
+										if(MappedObject.class.isAssignableFrom(result.getClass())){
+											MappedObject resultObj = (MappedObject) result;
+											if(ordered)
+												resultObj.setOrder(i);
+											children.add(resultObj);
+										}
+										i++;
 									}
 								}
-								node.setProperty(smithersPropName, resultsStr);
 							} catch (IllegalArgumentException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -199,86 +273,27 @@ public abstract class MappedObject extends JSONObservable {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-						}
-					}else if(annotation.annotationType().equals(SmithersReference.class)){
-						if(method.getReturnType().equals(FsNode.class)){
-							try {
-								FsNode referredNode = (FsNode) method.invoke(this);
-								referNodes.add(referredNode);
-							} catch (IllegalArgumentException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IllegalAccessException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (InvocationTargetException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch(NullPointerException e){
-								e.printStackTrace();
-							}
-						}
-					}else if(annotation.annotationType().equals(ObjectChildrenToSmithersGetter.class)){
-						try {
-							Object results = method.invoke(this);
-							ObjectChildrenToSmithersGetter getter = (ObjectChildrenToSmithersGetter) annotation;
-							boolean ordered = getter.ordered();
-							if(List.class.isAssignableFrom(results.getClass())){
-								int i = 0;
-								List<Object> castedResults = (List<Object>) results;
-								for(Object result : castedResults){
-									if(MappedObject.class.isAssignableFrom(result.getClass())){
-										MappedObject resultObj = (MappedObject) result;
-										if(ordered)
-											resultObj.setOrder(i);
-										children.add(resultObj);
-									}
-									i++;
-								}
-							}
-						} catch (IllegalArgumentException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InvocationTargetException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
 					}
 				}
-				
 			}
-			
-			
-			this.path = this.parentURI + "/" + this.nodeName + "/" + this.getId();
-			if(Fs.getNode(path) != null){
-				Fs.deleteNode(path);
-			}
-			
-			
-			if(this.order() != null){
-				node.setProperty("myeuscreen_child_order", this.order().toString());
-			}
-			
-			Fs.insertNode(node, this.parentURI);
 			
 			for(Iterator<FsNode> referenceIterator = referNodes.iterator(); referenceIterator.hasNext();){
 				FsNode referedNode = referenceIterator.next();
-				FsNode newReferingNode = new FsNode();
-				newReferingNode.setName(referedNode.getName());
-				newReferingNode.setId(referedNode.getId());
-				newReferingNode.setReferid(referedNode.getPath());
-				Fs.insertNode(newReferingNode, path);
+				String referIdPath = this.getPath() + "/" + referedNode.getName() + "/" + referedNode.getId();
+				if(Fs.getNode(referedNode.getPath()) != null && Fs.getNode(referIdPath) == null){
+					FsNode newReferingNode = new FsNode();
+					newReferingNode.setName(referedNode.getName());
+					newReferingNode.setId(referedNode.getId());
+					newReferingNode.setReferid(referedNode.getPath());
+					Fs.insertNode(newReferingNode, this.getPath());
+				}
 			}
 			
 			for(Iterator<MappedObject> childrenIterator = children.iterator(); childrenIterator.hasNext();){
 				MappedObject child = childrenIterator.next();
-				child.save(path);
+				child.save(this.getPath());
 			}
-			
-			this.setPath(path);
 		}else{
 			throw new NoParentForMappedObjectException("Please provide a correct parent for this object, parent given: " + this.parentURI);
 		}
@@ -299,7 +314,7 @@ public abstract class MappedObject extends JSONObservable {
 		if(this.path != null){
 			FsNode node = new FsNode();
 			node.setName(this.nodeName);
-			node.setId(this.id);
+			node.setId(this.getId());
 			node.setReferid(this.path);
 			Fs.insertNode(node, referencingParentNode.getPath());
 		}else{
@@ -334,18 +349,6 @@ public abstract class MappedObject extends JSONObservable {
 	
 	public void setParent(String parent){
 		this.parentURI = parent;
-	}
-
-	@JSONField(field="path")
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		if(path.contains("//")){
-			path = path.replace("//", "/");
-		}
-		this.path = path;
 	}
 
 }

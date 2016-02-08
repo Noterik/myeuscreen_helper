@@ -18,13 +18,23 @@ public class CollectionItem extends MappedObject{
 	
 	public CollectionItem(FsNode node, String parent){
 		super(node, parent);
-		this.order = Integer.parseInt(node.getProperty("myeuscreen_child_order"));
+		try{
+			this.order = Integer.parseInt(node.getProperty("myeuscreen_child_order"));
+		}catch(NumberFormatException nfe){
+			nfe.printStackTrace();
+			this.order = 9999;
+		}
 		this.item = getReferedVideo(node);
 	}
 	
 	public CollectionItem(FsNode node){
 		super(node);
-		this.order = Integer.parseInt(node.getProperty("myeuscreen_child_order"));
+		try{
+			this.order = Integer.parseInt(node.getProperty("myeuscreen_child_order"));
+		}catch(NumberFormatException nfe){
+			nfe.printStackTrace();
+			this.order = 9999;
+		}
 		this.item = getReferedVideo(node);
 	}
 	

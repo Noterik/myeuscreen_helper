@@ -75,6 +75,7 @@ public abstract class MappedObjectWithRights extends MappedObject implements Nod
 	
 	public void save() throws NoParentForMappedObjectException{
 		super.save();
+		//System.out.println("MappedObjectWithRights.save()");
 		Rights rights = this.getRights();
 		rights.setParent(super.getPath());
 		rights.save();

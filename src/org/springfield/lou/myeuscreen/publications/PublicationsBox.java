@@ -43,7 +43,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 	}
 	
 	private void populate(){
-		System.out.println("PublicationsBox.populate()");
 		this.publications = new HashMap<PublicationType, PaginatedArrayList<Publication>>();
 		
 		PublicationType[] publicationTypes = PublicationType.values();
@@ -82,7 +81,6 @@ public class PublicationsBox extends Observable implements IJSONObserver{
 								actualPNode = Fs.getNode(actualPNode.getReferid());
 							}
 							Publication newP = constructor.newInstance(actualPNode, this.path);
-							System.out.println("NEW PUBLICATION: " + newP);
 							newP.addObserver(this);
 							paginatedPublications.add(newP);
 							allPublications.add(newP);

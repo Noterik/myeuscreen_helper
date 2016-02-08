@@ -29,13 +29,11 @@ public abstract class Publication extends MappedObjectWithRights{
 	public Publication(FsNode node, String parent){
 		super(node, parent);
 		this.setId(node.getId());
-		this.setPath(node.getPath());
 	}
 		
 	public Publication(FsNode node){
 		super(node);
 		this.setId(node.getId());
-		this.setPath(node.getPath());
 	}
 	
 	@JSONField(field = "collectable")

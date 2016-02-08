@@ -46,10 +46,6 @@ public class Ticket {
 		setUserUrl(userUrl);
 		setTicketPropertyName(ticketPropertyName);
 		setTicket(Ticket.generateTicketNumber());
-		System.out.println("============= INSTANTIATE A TICKET OBJECT ==============");
-		System.out.println("User url: " + userUrl);
-		System.out.println("Ticket property name: " + ticketPropertyName);
-		System.out.println("Ticket number is: " + getTicket());
 		
 		Fs.setProperty(userUrl, ticketPropertyName, getTicket());
 	}
@@ -59,11 +55,9 @@ public class Ticket {
 		String ticket = user.getProperty(getTicketPropertyName());
 
 		if(ticket != null && ticket != "") {
-			System.out.println("======= TICKET IS EXISTING ========");
 			return true;
 		}
 		
-		System.out.println("======== TICKET DOES NOT EXIST =========");
 		return false;
 	}
 	
@@ -72,11 +66,9 @@ public class Ticket {
 		String ticket = user.getProperty(ticketPropertyName);
 
 		if(ticket != null && ticket != "") {
-			System.out.println("======= TICKET IS EXISTING ========");
 
 			return true;
 		}
-		System.out.println("======== TICKET DOES NOT EXIST =========");
 
 		return false;
 	}
@@ -86,11 +78,9 @@ public class Ticket {
 		String ticket = user.getProperty(ticketPropertyName);
 
 		if(ticket != null && ticket != "" && ticket == ticketNumber) {
-			System.out.println("======= TICKET IS EXISTING ========");
 
 			return true;
 		}
-		System.out.println("======== TICKET DOES NOT EXIST =========");
 
 		return false;
 	}

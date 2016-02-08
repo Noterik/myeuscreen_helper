@@ -20,7 +20,6 @@ import org.springfield.lou.json.JSONObservable;
 
 public class Rights extends JSONObservable{
 	private String parentPath;
-	private FsNode parentNode;
 	private String path;
 	private FsNode node;
 	private Map<Role, ArrayList<IRoleActor>> unsavedRoles;
@@ -40,7 +39,6 @@ public class Rights extends JSONObservable{
 		node = new FsNode();
 		this.parentPath = parentNode.getPath();
 		this.parentPath = this.parentPath.replace("//", "/");
-		this.parentNode = Fs.getNode(this.parentPath);
 		node.setName("rights");
 		node.setId("1");
 		this.giveRole(user, Role.OWNER);
@@ -60,7 +58,6 @@ public class Rights extends JSONObservable{
 		}
 		
 		parentPath = parentPath.replace("//", "/");
-		this.parentNode = Fs.getNode(this.parentPath);
 		path = uri;
 	}
 	
@@ -80,7 +77,6 @@ public class Rights extends JSONObservable{
 		}
 		
 		parentPath = parentPath.replace("//", "/");
-		this.parentNode = Fs.getNode(this.parentPath);
 		
 		this.node = rightsNode;
 		this.path = node.getPath();
@@ -133,26 +129,35 @@ public class Rights extends JSONObservable{
 		return this.roles.toString();
 	}
 	
+	public String getPath(){
+		return this.path;
+	}
+	
 	public void save(){
-		String path = node.getPath();
-		String creationDate = new Date().toString();
-		if(path != null){
-			creationDate = node.getProperty("creationDate");
-		}
+		//System.out.println("Rights.save()");
+		//System.out.println("Rights.save(): CURRENT STATE OF RIGHTS = " + this.toJSON());
+		//System.out.println("Rights.save(): PATH = " + this.getPath());
+		String creationDate = new Date().toString();		
 		
-		node.setProperty("creationDate", creationDate);
-		node.setProperty("lastUpdate", new Date().toString());
-		
-		Fs.insertNode(node, parentPath);
-		
+		if(this.getPath() == null){
+		//	System.out.println("Rights.save(): LET'S INSERT A NEW RIGHTS NODE!");
+			node.setProperty("creationDate", creationDate);
+			this.setPath(parentPath + "/rights/1");
+			Fs.insertNode(node, parentPath);
+		}	
+		Fs.setProperty(this.getPath(), "lastUpdate", new Date().toString());
+		 
 		for(Role role : unsavedRoles.keySet()){
+		//	System.out.println("Rights.save(): LET'S SAVE THE ROLE = " + role.name());
 			ArrayList<IRoleActor> actorsForRole = unsavedRoles.get(role);
+		//	System.out.println("Rights.save(): THE AMOUNT OF ACTORS FOR THIS ROLE = " + actorsForRole.size());
 			if(actorsForRole.size() > 0){
 				FsNode roleNode = new FsNode();
 				roleNode.setName("role");
 				roleNode.setId(role.getRoleId());
 				
 				this.path = parentPath + "/rights/1";
+				//System.out.println("Rights.save(): INSERT THE ROLE PATH = " + this.path);
 				Fs.insertNode(roleNode, this.path);
 				
 				for(IRoleActor actor : actorsForRole){
@@ -160,6 +165,8 @@ public class Rights extends JSONObservable{
 					actorNode.setName(actor.getNode().getName());
 					actorNode.setId(UUID.randomUUID().toString());
 					actorNode.setReferid(actor.getNode().getPath());
+					
+					//System.out.println("Rights.save(): INSERT ACTOR = " + actor.getNode().getName() + " WITH ROLE = " + role.getRoleId());
 					
 					String rolePath = this.path + "/role/" + role.getRoleId();
 					
@@ -187,6 +194,11 @@ public class Rights extends JSONObservable{
 		this.update();
 	}
 	
+	private void setPath(String path) {
+		// TODO Auto-generated method stub
+		this.path = path;
+	}
+
 	private void refresh(){
 		roles.clear();
 		try {
