@@ -21,7 +21,7 @@ public class CollectionItem extends MappedObject{
 		try{
 			this.order = Integer.parseInt(node.getProperty("myeuscreen_child_order"));
 		}catch(NumberFormatException nfe){
-			nfe.printStackTrace();
+			//nfe.printStackTrace();
 			this.order = 9999;
 		}
 		this.item = getReferedVideo(node);
@@ -32,7 +32,7 @@ public class CollectionItem extends MappedObject{
 		try{
 			this.order = Integer.parseInt(node.getProperty("myeuscreen_child_order"));
 		}catch(NumberFormatException nfe){
-			nfe.printStackTrace();
+			//nfe.printStackTrace();
 			this.order = 9999;
 		}
 		this.item = getReferedVideo(node);
